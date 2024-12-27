@@ -70,27 +70,22 @@ const HomePage = () => {
   }, [selectedCategory]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* 顶部横幅 */}
-      <div className="bg-gray-800 text-white py-16">
-        <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold mb-4">战锤攻略站</h1>
-          <p className="text-gray-300">分享最实用的战锤游戏攻略和战术分析</p>
+    <div className="homepage">
+      <div className="banner">
+        <div className="container">
+          <h1 className="title">战锤攻略站</h1>
+          <p className="subtitle">分享最实用的战锤游戏攻略和战术分析</p>
         </div>
       </div>
 
-      {/* 主要内容区域 */}
-      <div className="container mx-auto px-4 py-8">
-        {/* 分类导航 */}
-        <div className="flex flex-wrap gap-4 mb-8">
+      <div className="content">
+        <div className="category-nav">
           {categories.map(category => (
             <button
               key={category.id}
               onClick={() => setSelectedCategory(category.id)}
-              className={`px-4 py-2 rounded-full transition-colors ${
-                selectedCategory === category.id
-                  ? 'bg-gray-800 text-white'
-                  : 'bg-white text-gray-800 hover:bg-gray-100'
+              className={`category-button ${
+                selectedCategory === category.id ? 'active' : ''
               }`}
             >
               {category.name}
@@ -98,46 +93,43 @@ const HomePage = () => {
           ))}
         </div>
 
-        {/* 文章列表 */}
-        <div className="space-y-8">
+        <div className="article-list">
           {loading ? (
-            <div className="text-center py-8">加载中...</div>
+            <div className="loading">加载中...</div>
           ) : articles.length === 0 ? (
-            <div className="text-center py-8">暂无文章</div>
+            <div className="no-articles">暂无文章</div>
           ) : (
             articles.map(article => (
-              <article key={article.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="md:flex">
-                  <div className="md:w-1/3">
+              <article key={article.id} className="article-card">
+                <div className="article-content">
+                  <div className="article-image">
                     <img
                       src={article.cover_image || DEFAULT_COVER_IMAGE}
                       alt={article.title}
-                      className="h-48 w-full object-cover md:h-full"
                       onError={(e) => {
-                        // 图片加载失败时使用默认图片
                         const target = e.target as HTMLImageElement;
                         target.src = DEFAULT_COVER_IMAGE;
                       }}
                     />
                   </div>
-                  <div className="p-6 md:w-2/3">
-                    <div className="flex items-center text-sm text-gray-500 mb-2">
-                      <Calendar size={16} className="mr-2" />
+                  <div className="article-details">
+                    <div className="article-meta">
+                      <Calendar size={16} className="icon" />
                       <span>{new Date(article.created_at).toLocaleDateString()}</span>
-                      <Eye size={16} className="ml-4 mr-2" />
+                      <Eye size={16} className="icon" />
                       <span>{article.views.toLocaleString()} 次浏览</span>
                     </div>
-                    <h2 className="text-xl font-bold mb-2 hover:text-gray-600">
+                    <h2 className="article-title">
                       {article.title}
                     </h2>
-                    <p className="text-gray-600 mb-4">
+                    <p className="article-summary">
                       {article.summary || article.content.slice(0, 100) + '...'}
                     </p>
-                    <div className="flex items-center justify-between">
-                      <span className="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm">
+                    <div className="article-footer">
+                      <span className="article-category">
                         {article.category}
                       </span>
-                      <button className="text-gray-500 hover:text-gray-800 flex items-center">
+                      <button className="read-more">
                         阅读更多 <ChevronRight size={16} />
                       </button>
                     </div>
