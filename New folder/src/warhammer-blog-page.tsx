@@ -117,49 +117,77 @@ const HomePage = () => {
           ) : articles.length === 0 ? (
             <div className="no-articles">暂无文章</div>
           ) : (
-            articles.map(article => (
-              <article key={article.id} className="article-card">
-                <div className="article-content">
-                  <div className="article-image">
-                    <img
-                      src={article.cover_image || DEFAULT_COVER_IMAGE}
-                      alt={article.title}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = DEFAULT_COVER_IMAGE;
-                      }}
-                    />
-                  </div>
-                  <div className="article-details">
-                    <div className="article-meta">
-                      <Calendar size={16} className="icon" />
-                      <span>{new Date(article.created_at).toLocaleDateString()}</span>
-                      <Eye size={16} className="icon" />
-                      <span>{article.views.toLocaleString()} 次浏览</span>
+            <>
+              {articles.map(article => (
+                <article key={article.id} className="article-card">
+                  <div className="article-content">
+                    <div className="article-image">
+                      <img
+                        src={article.cover_image || DEFAULT_COVER_IMAGE}
+                        alt={article.title}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = DEFAULT_COVER_IMAGE;
+                        }}
+                      />
                     </div>
-                    <h2 className="article-title">
-                      {article.title}
-                    </h2>
-                    <p className="article-summary">
-                      {article.summary || article.content.slice(0, 100) + '...'}
-                    </p>
-                    {expandedArticleId === article.id && (
-                      <div className="article-full-content">
-                        <p>{article.content}</p>
+                    <div className="article-details">
+                      <div className="article-meta">
+                        <Calendar size={16} className="icon" />
+                        <span>{new Date(article.created_at).toLocaleDateString()}</span>
+                        <Eye size={16} className="icon" />
+                        <span>{article.views.toLocaleString()} 次浏览</span>
+                      </div>
+                      <h2 className="article-title">
+                        {article.title}
+                      </h2>
+                      <p className="article-summary">
+                        {article.summary || article.content.slice(0, 100) + '...'}
+                      </p>
+                      <div className="article-footer">
+                        <span className="article-category">
+                          {article.category}
+                        </span>
+                        <button className="read-more" onClick={() => handleReadMore(article.id)}>
+                          阅读更多 <ChevronRight size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              ))}
+              
+              {expandedArticleId && (
+                <div className="article-drawer">
+                  <div className="article-drawer-overlay" onClick={() => setExpandedArticleId(null)} />
+                  <div className="article-drawer-content">
+                    <button 
+                      className="article-drawer-close"
+                      onClick={() => setExpandedArticleId(null)}
+                    >
+                      ×
+                    </button>
+                    {articles.find(a => a.id === expandedArticleId) && (
+                      <div className="article-drawer-inner">
+                        <h2 className="article-drawer-title">
+                          {articles.find(a => a.id === expandedArticleId)?.title}
+                        </h2>
+                        <div className="article-drawer-meta">
+                          <span>{articles.find(a => a.id === expandedArticleId)?.category}</span>
+                          <span>•</span>
+                          <span>
+                            {new Date(articles.find(a => a.id === expandedArticleId)?.created_at || '').toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="article-drawer-body">
+                          {articles.find(a => a.id === expandedArticleId)?.content}
+                        </div>
                       </div>
                     )}
-                    <div className="article-footer">
-                      <span className="article-category">
-                        {article.category}
-                      </span>
-                      <button className="read-more" onClick={() => handleReadMore(article.id)}>
-                        阅读更多 <ChevronRight size={16} />
-                      </button>
-                    </div>
                   </div>
                 </div>
-              </article>
-            ))
+              )}
+            </>
           )}
         </div>
       </div>
