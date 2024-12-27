@@ -22,6 +22,7 @@ const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedArticleId, setExpandedArticleId] = useState<number | null>(null);
 
   // 预定义分类（因为数据库中是直接存储的分类名）
   const categories = [
@@ -68,6 +69,23 @@ const HomePage = () => {
 
     fetchArticles();
   }, [selectedCategory]);
+
+  const handleReadMore = (id: number) => {
+    setExpandedArticleId(expandedArticleId === id ? null : id);
+  };
+
+  const handleClickOutside = (e: MouseEvent) => {
+    if (!(e.target as HTMLElement).closest('.article-card')) {
+      setExpandedArticleId(null);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="homepage">
@@ -125,11 +143,16 @@ const HomePage = () => {
                     <p className="article-summary">
                       {article.summary || article.content.slice(0, 100) + '...'}
                     </p>
+                    {expandedArticleId === article.id && (
+                      <div className="article-full-content">
+                        <p>{article.content}</p>
+                      </div>
+                    )}
                     <div className="article-footer">
                       <span className="article-category">
                         {article.category}
                       </span>
-                      <button className="read-more">
+                      <button className="read-more" onClick={() => handleReadMore(article.id)}>
                         阅读更多 <ChevronRight size={16} />
                       </button>
                     </div>
