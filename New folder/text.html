@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Connection Test</title>
+</head>
+<body>
+    <h1>Supabase Connection Test</h1>
+    <div id="result">Testing connection...</div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        const supabaseUrl = 'https://fnqfkanmkybhtclhogev.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZucWZrYW5ta3liaHRjbGhvZ2V2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ4ODM4OTQsImV4cCI6MjA1MDQ1OTg5NH0.YxUeBk0gqDFOe4YRPfjHWtR5qalj3OgZGR_9ATY3pAc';
+
+        const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+        async function testConnection() {
+            const { data, error } = await supabase
+                .from('articles')
+                .select('*')
+                .limit(1);
+
+            const resultDiv = document.getElementById('result');
+            if (error) {
+                resultDiv.textContent = 'Error connecting to database: ' + error.message;
+            } else {
+                resultDiv.textContent = 'Successfully connected! Sample data: ' + JSON.stringify(data);
+            }
+        }
+
+        testConnection();
+    </script>
+</body>
+</html>
