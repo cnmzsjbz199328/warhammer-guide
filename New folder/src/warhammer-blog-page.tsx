@@ -87,6 +87,20 @@ const HomePage = () => {
     };
   }, []);
 
+  // 获取卡片位置
+  const getCardPosition = (id: number) => {
+    const card = document.querySelector(`[data-article-id="${id}"]`);
+    if (card) {
+      const rect = card.getBoundingClientRect();
+      return {
+        top: rect.top,
+        left: rect.right,
+        height: rect.height
+      };
+    }
+    return null;
+  };
+
   return (
     <div className="homepage">
       <div className="banner">
@@ -119,7 +133,11 @@ const HomePage = () => {
           ) : (
             <>
               {articles.map(article => (
-                <article key={article.id} className="article-card">
+                <article 
+                  key={article.id} 
+                  className="article-card"
+                  data-article-id={article.id}
+                >
                   <div className="article-content">
                     <div className="article-image">
                       <img
@@ -154,39 +172,25 @@ const HomePage = () => {
                       </div>
                     </div>
                   </div>
-                </article>
-              ))}
-              
-              {expandedArticleId && (
-                <div className="article-drawer">
-                  <div className="article-drawer-overlay" onClick={() => setExpandedArticleId(null)} />
-                  <div className="article-drawer-content">
-                    <button 
-                      className="article-drawer-close"
-                      onClick={() => setExpandedArticleId(null)}
-                    >
-                      ×
-                    </button>
-                    {articles.find(a => a.id === expandedArticleId) && (
-                      <div className="article-drawer-inner">
-                        <h2 className="article-drawer-title">
-                          {articles.find(a => a.id === expandedArticleId)?.title}
-                        </h2>
-                        <div className="article-drawer-meta">
-                          <span>{articles.find(a => a.id === expandedArticleId)?.category}</span>
-                          <span>•</span>
-                          <span>
-                            {new Date(articles.find(a => a.id === expandedArticleId)?.created_at || '').toLocaleDateString()}
-                          </span>
-                        </div>
-                        <div className="article-drawer-body">
-                          {articles.find(a => a.id === expandedArticleId)?.content}
+                  {expandedArticleId === article.id && (
+                    <div className="article-drawer">
+                      <div className="article-drawer-content">
+                        <button 
+                          className="article-drawer-close"
+                          onClick={() => setExpandedArticleId(null)}
+                        >
+                          ×
+                        </button>
+                        <div className="article-drawer-inner">
+                          <div className="article-drawer-body">
+                            {article.content}
+                          </div>
                         </div>
                       </div>
-                    )}
-                  </div>
-                </div>
-              )}
+                    </div>
+                  )}
+                </article>
+              ))}
             </>
           )}
         </div>

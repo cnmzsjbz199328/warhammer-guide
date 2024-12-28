@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supabase Connection Test</title>
+    <title>Supabase Image Upload Test</title>
 </head>
 <body>
-    <h1>Supabase Connection Test</h1>
-    <div id="result">Testing connection...</div>
+    <h1>Supabase Image Upload Test</h1>
+    <input type="file" id="fileInput" />
+    <button id="uploadButton">Upload Image</button>
+    <div id="uploadResult"></div>
+    <img id="uploadedImage" style="display:none;" />
 
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
@@ -17,21 +20,29 @@
 
         const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-        async function testConnection() {
-            const { data, error } = await supabase
-                .from('articles')
-                .select('*')
-                .limit(1);
-
-            const resultDiv = document.getElementById('result');
-            if (error) {
-                resultDiv.textContent = 'Error connecting to database: ' + error.message;
-            } else {
-                resultDiv.textContent = 'Successfully connected! Sample data: ' + JSON.stringify(data);
+        document.getElementById('uploadButton').addEventListener('click', async () => {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select a file to upload.');
+                return;
             }
-        }
 
-        testConnection();
+            const { data, error } = await supabase.storage
+                .from('picture') // Replace with your bucket name
+                .upload(`public/${file.name}`, file); // Replace with desired path
+
+            const uploadResultDiv = document.getElementById('uploadResult');
+            if (error) {
+                uploadResultDiv.textContent = 'Error uploading file: ' + error.message;
+            } else {
+                const imageUrl = `${supabaseUrl}/storage/v1/object/picture/public/${file.name}`;
+                uploadResultDiv.innerHTML = `File uploaded successfully! <a href="${imageUrl}" target="_blank">View Image</a>`;
+                const uploadedImage = document.getElementById('uploadedImage');
+                uploadedImage.src = imageUrl;
+                uploadedImage.style.display = 'block';
+            }
+        });
     </script>
 </body>
 </html>
